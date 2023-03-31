@@ -1,25 +1,25 @@
 import AudioPlayer from "react-h5-audio-player";
 import "./playerstyles.css";
 
-const Player = ({ title, src }) => {
+const Player = ({ title, src, songEnded, playerRef }) => {
   return (
-    <div class="bg-white shadow-lg rounded-lg w-5/6 max-w-[48rem] overflow-hidden">
+    <div className="bg-white shadow-lg rounded-lg w-5/6 max-w-[48rem] overflow-hidden">
       <div className="w-full p-8">
-        <div class="flex justify-between">
+        <div className="flex justify-between">
           <div>
-            <h3 class="text-2xl font-medium">{title}</h3>
+            <h3 className="text-2xl font-medium">{title}</h3>
             {/* <p class="text-sm mt-1 text-grey">Artist</p> */}
           </div>
         </div>
         <AudioPlayer
-          autoPlay
           src={src}
-          loop
+          ref={playerRef}
           showJumpControls={false}
           //   onClickNext={onNext}
           //   onClickPrevious={onPrevious}
           customAdditionalControls={[]}
           layout="stacked-reverse"
+          onEnded={songEnded}
         />
       </div>
     </div>
