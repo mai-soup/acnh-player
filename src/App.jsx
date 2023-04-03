@@ -46,7 +46,7 @@ function App() {
     // return the hour in 12-hour format
     return `${currentHour % 12 === 0 ? 12 : currentHour % 12}${
       // appended with am/pm
-      currentHour > 12 ? "PM" : "AM"
+      currentHour >= 12 && currentHour < 24 ? "PM" : "AM"
       // and the selected weather
     }, ${weather}`;
   };
