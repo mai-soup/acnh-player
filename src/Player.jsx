@@ -3,26 +3,24 @@ import "./playerstyles.css";
 
 const Player = ({ title, src, songEnded, playerRef }) => {
   return (
-    <div className="bg-white shadow-lg rounded-lg w-5/6 max-w-[48rem] overflow-hidden">
-      <div className="w-full p-8">
-        <div className="flex justify-between">
-          <div>
-            <h3 className="text-2xl font-medium">{title}</h3>
-            {/* <p class="text-sm mt-1 text-grey">Artist</p> */}
-          </div>
+    <>
+      <div className="flex justify-between">
+        <div>
+          <h3 className="text-2xl font-medium">{title}</h3>
+          {/* <p class="text-sm mt-1 text-grey">Artist</p> */}
         </div>
-        <AudioPlayer
-          src={src}
-          ref={playerRef}
-          showJumpControls={false}
-          //   onClickNext={onNext}
-          //   onClickPrevious={onPrevious}
-          customAdditionalControls={[]}
-          layout="stacked-reverse"
-          onEnded={songEnded}
-        />
       </div>
-    </div>
+      <AudioPlayer
+        src={src}
+        ref={playerRef}
+        showJumpControls={false}
+        //   onClickNext={onNext}
+        //   onClickPrevious={onPrevious}
+        customAdditionalControls={[]}
+        layout="stacked-reverse"
+        onEnded={songEnded}
+      />
+    </>
   );
 };
 

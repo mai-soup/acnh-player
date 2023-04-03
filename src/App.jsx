@@ -1,17 +1,30 @@
 import Player from "./Player";
 import { useState, useEffect, createRef } from "react";
 import axios from "axios";
+import RainButton from "./RainButton";
+import SunButton from "./SunButton";
+import SnowButton from "./SnowButton";
 
 const ENDPOINT = "https://acnhapi.com/v1a/backgroundmusic";
+const SUNNY = "Sunny";
+const RAINY = "Rainy";
+const SNOWY = "Snowy";
 
 function App() {
-  const [weather, setWeather] = useState("Sunny");
+  const [weather, setWeather] = useState(SUNNY);
   const [currentHour, setCurrentHour] = useState(new Date().getHours());
   const [src, setSrc] = useState("");
+  const playerRef = createRef();
+
+  useEffect(() => {
+    if (src) {
+      playerRef.current.audio.current.play();
+    }
+  }, [src]);
 
   useEffect(() => {
     getSongOfTheHour();
-  }, []);
+  }, [currentHour, weather]);
 
   const getSongOfTheHour = () => {
     axios
@@ -40,28 +53,51 @@ function App() {
 
   const updateSong = () => {
     setCurrentHour(new Date().getHours());
-    getSongOfTheHour();
   };
 
   const handleSongEnded = () => {
-    if (new Date().getHours !== currentHour) {
+    if (new Date().getHours() !== currentHour) {
       updateSong();
+    } else {
+      playerRef.current.audio.current.play();
     }
-    playerRef.current.audio.current.play();
   };
 
-  const playerRef = createRef();
+  const handleWeatherClick = evt => {
+    const newWeather = evt.currentTarget.id;
+    if (newWeather !== weather) {
+      setWeather(newWeather);
+    }
+  };
 
   return (
     <div className="w-full">
       <div className="h-2 bg-acnh-blue">
         <div className="flex items-center justify-center h-screen bg-acnh-green-dull">
-          <Player
-            title={makeTitleString()}
-            src={src}
-            songEnded={handleSongEnded}
-            playerRef={playerRef}
-          />
+          <div className="bg-white shadow-lg rounded-lg w-5/6 max-w-[48rem] overflow-hidden">
+            <div className="w-full p-8">
+              <Player
+                title={makeTitleString()}
+                src={src}
+                songEnded={handleSongEnded}
+                playerRef={playerRef}
+              />
+              <div className="flex flex-row justify-evenly">
+                <RainButton
+                  isActive={weather === RAINY}
+                  handleClick={handleWeatherClick}
+                />
+                <SunButton
+                  isActive={weather === SUNNY}
+                  handleClick={handleWeatherClick}
+                />
+                <SnowButton
+                  isActive={weather === SNOWY}
+                  handleClick={handleWeatherClick}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
