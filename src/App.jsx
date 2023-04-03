@@ -71,35 +71,47 @@ function App() {
   };
 
   return (
-    <div className="w-full">
-      <div className="h-2 bg-acnh-blue">
-        <div className="flex items-center justify-center h-screen bg-acnh-green-dull">
-          <div className="bg-white shadow-lg rounded-lg w-5/6 max-w-[48rem] overflow-hidden">
-            <div className="w-full p-8">
-              <Player
-                title={makeTitleString()}
-                src={src}
-                songEnded={handleSongEnded}
-                playerRef={playerRef}
+    <div className="w-full h-screen flex flex-col bg-acnh-green-dull">
+      <div className="h-2 bg-acnh-blue" />
+      <div className="flex items-center justify-center grow">
+        <div className="bg-white shadow-lg rounded-lg w-5/6 max-w-[48rem] overflow-hidden">
+          <div className="w-full p-8">
+            <Player
+              title={makeTitleString()}
+              src={src}
+              songEnded={handleSongEnded}
+              playerRef={playerRef}
+            />
+            <div className="flex flex-row justify-evenly">
+              <RainButton
+                isActive={weather === RAINY}
+                handleClick={handleWeatherClick}
               />
-              <div className="flex flex-row justify-evenly">
-                <RainButton
-                  isActive={weather === RAINY}
-                  handleClick={handleWeatherClick}
-                />
-                <SunButton
-                  isActive={weather === SUNNY}
-                  handleClick={handleWeatherClick}
-                />
-                <SnowButton
-                  isActive={weather === SNOWY}
-                  handleClick={handleWeatherClick}
-                />
-              </div>
+              <SunButton
+                isActive={weather === SUNNY}
+                handleClick={handleWeatherClick}
+              />
+              <SnowButton
+                isActive={weather === SNOWY}
+                handleClick={handleWeatherClick}
+              />
             </div>
           </div>
         </div>
       </div>
+      <footer className="flex items-center justify-center text-grey">
+        <p className="py-4">
+          Created by{" "}
+          <a
+            href="https://maijsgarais.com/"
+            className="underline hover:font-bold"
+            target="_blank"
+          >
+            Maijs Garais
+          </a>
+          .
+        </p>
+      </footer>
     </div>
   );
 }
