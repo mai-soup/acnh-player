@@ -15,6 +15,7 @@ function App() {
   const [currentHour, setCurrentHour] = useState(new Date().getHours());
   const [src, setSrc] = useState("");
   const playerRef = createRef();
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (src) {
@@ -26,20 +27,34 @@ function App() {
     getSongOfTheHour();
   }, [currentHour, weather]);
 
-  const getSongOfTheHour = () => {
-    axios
-      .get(ENDPOINT)
-      .then(res => res.data)
-      .then(data => {
-        for (let song of data) {
-          if (song.hour === currentHour && song.weather === weather) {
-            return song.music_uri;
-          }
+  const getSongOfTheHour = async () => {
+    try {
+      const response = await axios.get(ENDPOINT);
+      const data = response.data;
+      for (let song of data) {
+        if (song.hour === currentHour && song.weather === weather) {
+          return song.music_uri;
         }
-      })
-      .then(uri => {
-        setSrc(uri);
-      });
+      }
+    } catch (err) {
+      // if error.response.status in 4xx range, change error message to nofify the dev
+      // if error.response.status in 5xx range, err message that api has problems
+      // if timeout, err message that api has ongoing timeout issues
+      if (err.response) {
+        if (err.response.status >= 400 && err.response.status < 500) {
+          setErrorMessage(
+            `Please notify the developer of the issue: ${err.response.data.message}`
+          );
+        } else if (err.response.status >= 500) {
+          setErrorMessage("API Error");
+        }
+      } else {
+        // timeout or other issues that dont have a status code
+        if (err.code === "ERR_NETWORK") {
+          setErrorMessage("API Timeout");
+        }
+      }
+    }
   };
 
   const makeTitleString = () => {
@@ -63,7 +78,7 @@ function App() {
     }
   };
 
-  const handleWeatherClick = evt => {
+  const handleWeatherClick = (evt) => {
     const newWeather = evt.currentTarget.id;
     if (newWeather !== weather) {
       setWeather(newWeather);
@@ -76,6 +91,13 @@ function App() {
       <div className="flex items-center justify-center grow">
         <div className="bg-white shadow-lg rounded-lg w-5/6 max-w-[48rem] overflow-hidden">
           <div className="w-full p-8">
+            <p className="pb-2 text-center">
+              The ACNH API has been having ongoing timeout issues since August.
+              Apologies if the player is not working as intended.
+            </p>
+            {errorMessage && (
+              <p className="text-red-500 text-center">Error: {errorMessage}</p>
+            )}
             <Player
               title={makeTitleString()}
               src={src}
