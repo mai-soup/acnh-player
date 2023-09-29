@@ -93,7 +93,8 @@ function App() {
           <div className="w-full p-8">
             <p className="pb-2 text-center">
               The ACNH API has been having ongoing timeout issues since August.
-              Apologies if the player is not working as intended.
+              Apologies if the player is not working as intended. We are
+              expecting to migrate to another API before Oct 02.
             </p>
             {errorMessage && (
               <p className="text-red-500 text-center">Error: {errorMessage}</p>
