@@ -5,14 +5,23 @@ import RainButton from "./RainButton";
 import SunButton from "./SunButton";
 import SnowButton from "./SnowButton";
 
-const ENDPOINT = "https://acnhapi.com/v1a/backgroundmusic";
+const ENDPOINT = "https://ac-api.vercel.app/api";
 const SUNNY = "Sunny";
 const RAINY = "Rainy";
 const SNOWY = "Snowy";
 
+function formatAMPM(date) {
+  var hours = date.getHours();
+  var suffix = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  var strTime = hours + suffix;
+  return strTime;
+}
+
 function App() {
   const [weather, setWeather] = useState(SUNNY);
-  const [currentHour, setCurrentHour] = useState(new Date().getHours());
+  const [currentHour, setCurrentHour] = useState(formatAMPM(new Date()));
   const [src, setSrc] = useState("");
   const playerRef = createRef();
   const [errorMessage, setErrorMessage] = useState("");
@@ -29,8 +38,22 @@ function App() {
 
   const getSongOfTheHour = async () => {
     try {
-      const response = await axios.get(ENDPOINT);
-      const data = response.data;
+      const response = await axios.get(ENDPOINT, {
+        params: { time: currentHour },
+      });
+      const acnh = response.data.music.find(
+        (game) => game.game === "New Horizons"
+      );
+      switch (weather) {
+        case SUNNY:
+          return acnh.file;
+        case RAINY:
+          const rainyData = acnh.weather.find((w) => "rain" in w);
+          return rainyData.rain;
+        case SNOWY:
+          const snowyData = acnh.weather.find((w) => "snow" in w);
+          return snowyData.snow;
+      }
       for (let song of data) {
         if (song.hour === currentHour && song.weather === weather) {
           return song.music_uri;
@@ -59,15 +82,12 @@ function App() {
 
   const makeTitleString = () => {
     // return the hour in 12-hour format
-    return `${currentHour % 12 === 0 ? 12 : currentHour % 12}${
-      // appended with am/pm
-      currentHour >= 12 && currentHour < 24 ? "PM" : "AM"
-      // and the selected weather
-    }, ${weather}`;
+    return `${currentHour}, ${weather}`;
   };
 
   const updateSong = () => {
-    setCurrentHour(new Date().getHours());
+    setCurrentHour(formatAMPM(new Date()));
+    console.log(currentHour);
   };
 
   const handleSongEnded = () => {
@@ -91,11 +111,6 @@ function App() {
       <div className="flex items-center justify-center grow">
         <div className="bg-white shadow-lg rounded-lg w-5/6 max-w-[48rem] overflow-hidden">
           <div className="w-full p-8">
-            <p className="pb-2 text-center">
-              The ACNH API has been having ongoing timeout issues since August.
-              Apologies if the player is not working as intended. We are
-              expecting to migrate to another API before Oct 02.
-            </p>
             {errorMessage && (
               <p className="text-red-500 text-center">Error: {errorMessage}</p>
             )}
