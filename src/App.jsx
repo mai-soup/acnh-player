@@ -111,6 +111,9 @@ function App() {
       <div className="flex items-center justify-center grow">
         <div className="bg-white shadow-lg rounded-lg w-5/6 max-w-[48rem] overflow-hidden">
           <div className="w-full p-8">
+            <p className="text-red-500 text-center">
+              Not working due to broken API, apologies
+            </p>
             {errorMessage && (
               <p className="text-red-500 text-center">Error: {errorMessage}</p>
             )}
